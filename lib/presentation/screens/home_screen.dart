@@ -14,15 +14,30 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(title: Text('Pokedex')),
       body: state.when(
         data: (pokemons) {
-          return DsGridCard(
-            children: pokemons.map((pokemon) {
-              return DsCardItem(
-                name: pokemon.name,
-                number: pokemon.id.toString(),
-                imageUrl: pokemon.imageUrl,
-                types: pokemon.types,
-              );
-            }).toList(),
+          return  NotificationListener<ScrollNotification>(
+            onNotification: (scrollInfo) {
+              if (scrollInfo.metrics.pixels >=
+                  scrollInfo.metrics.maxScrollExtent - 200) {
+                ref.read(pokemonProvider.notifier).loadMore();
+              }
+              return false;
+            },
+            child: Column(
+              children: [
+                Expanded(
+                  child: DsGridCard(
+                    children: pokemons.map((pokemon) {
+                      return DsCardItem(
+                        name: pokemon.name,
+                        number: pokemon.id.toString(),
+                        imageUrl: pokemon.imageUrl,
+                        types: pokemon.types,
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
           );
         },
         error: (error, _) => Center(child: Text('Error')),
