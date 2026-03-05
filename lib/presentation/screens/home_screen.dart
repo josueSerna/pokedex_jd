@@ -1,47 +1,34 @@
 import 'package:atomic_ds_system_jd/atomic_ds_system_jd.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pokemon_api_v1/presentation/providers/pokemons_provider.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(pokemonProvider);
-
     return Scaffold(
-      appBar: AppBar(title: Text('Pokedex')),
-      body: state.when(
-        data: (pokemons) {
-          return  NotificationListener<ScrollNotification>(
-            onNotification: (scrollInfo) {
-              if (scrollInfo.metrics.pixels >=
-                  scrollInfo.metrics.maxScrollExtent - 200) {
-                ref.read(pokemonProvider.notifier).loadMore();
-              }
-              return false;
-            },
-            child: Column(
-              children: [
-                Expanded(
-                  child: DsGridCard(
-                    children: pokemons.map((pokemon) {
-                      return DsCardItem(
-                        name: pokemon.name,
-                        number: pokemon.id.toString(),
-                        imageUrl: pokemon.imageUrl,
-                        types: pokemon.types,
-                      );
-                    }).toList(),
-                  ),
+      appBar: AppBar(title: DsHeadlineLarge('Pokedex')),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 1),
+          child: Column(
+            children: [
+              Expanded(
+                child: DsGridCard(
+                  aspectRatio: 2.0,
+                  children: [
+                    DsCardMenu(name: 'Pokedex', color: Colors.red,onTap: () => context.go('/pokedex'),),
+                    DsCardMenu(name: 'Megas', color: Colors.lightBlueAccent.shade700, onTap: () => context.go('/mega'),),
+                    DsCardMenu(name: 'Alola', color: Colors.brown.shade200),
+                    DsCardMenu(name: 'Galar', color: Colors.amber.shade200)
+                  ],
                 ),
-              ],
-            ),
-          );
-        },
-        error: (error, _) => Center(child: Text('Error')),
-        loading: () => Center(child: CircularProgressIndicator()),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

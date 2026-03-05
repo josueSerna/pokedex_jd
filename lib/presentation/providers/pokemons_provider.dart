@@ -21,7 +21,7 @@ final pokemonProvider =
     );
 
 class PokemonsNotifier extends AsyncNotifier<List<PokemonModel>> {
-  static const int _limit = 50;
+  static const int _limit = 20;
   int _offset = 0;
   bool _isLoadingMore = false;
   bool _hasMore = true;
