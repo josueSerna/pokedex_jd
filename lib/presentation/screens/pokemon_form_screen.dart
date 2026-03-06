@@ -4,14 +4,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokemon_api_v1/domain/enums/pokemon_form.dart';
 import 'package:pokemon_api_v1/presentation/providers/pokemons_region_provider.dart';
 
-class MegasScreen extends ConsumerWidget {
-  const MegasScreen({super.key});
+class PokemonFormScreen extends ConsumerWidget {
+  final PokemonForm form;
+
+  const PokemonFormScreen({super.key, required this.form});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final pokemonForm = ref.watch(pokemonByFormProvider(PokemonForm.mega));
+    final pokemonForm = ref.watch(pokemonByFormProvider(form));
     return Scaffold(
-      appBar: AppBar(title: Text('Pokedex')),
+      appBar: AppBar(title: Text(form.label)),
       body: pokemonForm.when(
         data: (pokemons) {
           return Column(

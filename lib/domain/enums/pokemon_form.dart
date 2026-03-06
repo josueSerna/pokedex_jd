@@ -17,4 +17,40 @@ extension PokemonFormX on PokemonForm {
         return 'gmax';
     }
   }
+
+  String get label {
+    switch (this) {
+      case PokemonForm.mega:
+        return 'Megas';
+      case PokemonForm.alola:
+        return 'Regionales de Alola';
+      case PokemonForm.galar:
+        return 'Regionales de Galar';
+      case PokemonForm.hisui:
+        return 'Regionales de Hisui';
+      case PokemonForm.paldea:
+        return 'Regionales de Paldea';
+      case PokemonForm.gigantamax:
+        return 'Gigamax';
+    }
+  }
+
+  static PokemonForm? fromRoute(String route) {
+    switch (route) {
+      case 'mega':
+        return PokemonForm.mega;
+      case 'alola':
+        return PokemonForm.alola;
+      case 'galar':
+        return PokemonForm.galar;
+      case 'hisui':
+        return PokemonForm.hisui;
+      case 'paldea':
+        return PokemonForm.paldea;
+      case 'gmax':
+        return PokemonForm.gigantamax;
+      default:
+        return null;
+    }
+  }
 }

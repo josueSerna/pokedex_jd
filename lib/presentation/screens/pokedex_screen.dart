@@ -1,6 +1,7 @@
 import 'package:atomic_ds_system_jd/atomic_ds_system_jd.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pokemon_api_v1/presentation/providers/pokemons_provider.dart';
 
 class PokedexScreen extends ConsumerWidget {
@@ -11,10 +12,20 @@ class PokedexScreen extends ConsumerWidget {
     final state = ref.watch(pokemonProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Pokedex')),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
+        title: Text('Pokedex'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: ()=> context.push('/pokedex/search'),
+        child: Icon(Icons.search),
+      ),
       body: state.when(
         data: (pokemons) {
-          return  NotificationListener<ScrollNotification>(
+          return NotificationListener<ScrollNotification>(
             onNotification: (scrollInfo) {
               if (scrollInfo.metrics.pixels >=
                   scrollInfo.metrics.maxScrollExtent - 200) {

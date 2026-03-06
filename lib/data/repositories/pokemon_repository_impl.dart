@@ -8,6 +8,7 @@ import 'package:pokemon_api_v1/domain/repositories/pokemon_respository.dart';
 class PokemonRepositoryImpl implements PokemonRespository {
   final ApiClient apiClient;
 
+  List<String>? _allPokemonNames;
   PokemonRepositoryImpl(this.apiClient);
 
   @override
@@ -51,6 +52,53 @@ class PokemonRepositoryImpl implements PokemonRespository {
     return Rigth(pokemons);
   }
 
+  @override
+  Future<Either<Failure, List<PokemonModel>>> searchPokemonByName(
+    String query,
+  ) async {
+    if (_allPokemonNames == null) {
+      final namesResult = await apiClient.request(
+        '/pokemon-species',
+        queryParameters: {'limit': '1026', 'offset': '0'},
+        onSuccess: (body) {
+          final results = body['results'] as List<dynamic>;
+          return results.map((e) => e['name'] as String).toList();
+        },
+      );
+      if (namesResult.isLeft) {
+        return Left(namesResult.left!);
+      }
+      _allPokemonNames = namesResult.rigth!;
+    }
+
+    final lowerQuery = query.toLowerCase();
+    final matchedNames = _allPokemonNames!
+        .where((name) => name.toLowerCase().startsWith(lowerQuery))
+        .toList();
+
+    if (matchedNames.isEmpty) {
+      return const Rigth([]);
+    }
+    final futures = matchedNames
+        .map(
+          (name) => apiClient.request(
+            '/pokemon/$name',
+            onSuccess: (body) =>
+                PokemonModel.fromJson(body as Map<String, dynamic>),
+          ),
+        )
+        .toList();
+
+    final pokemonList = await Future.wait(futures);
+    final pokemons = <PokemonModel>[];
+    for (final pokemon in pokemonList) {
+      pokemon.fold((_) {}, pokemons.add);
+    }
+
+    return Rigth(pokemons);
+  }
+
+  @override
   Future<Either<Failure, List<PokemonModel>>> getPokemonByForm(
     PokemonForm form,
   ) async {
