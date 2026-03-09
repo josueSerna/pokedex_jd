@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:atomic_ds_system_jd/atomic_ds_system_jd.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pokemon_api_v1/presentation/providers/pokemon_search_provider.dart';
 
 class PokemonSearchScreen extends ConsumerStatefulWidget {
@@ -36,28 +37,30 @@ class _PokemonSearchScreenState extends ConsumerState<PokemonSearchScreen> {
     final searchState = ref.watch(searchPokemonProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: TextField(
+      appBar: DsSearchAppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => context.pop('/pokedex'),
+        ),
+        searchInput: DsSearchInput(
           controller: _searchController,
           autofocus: true,
-          decoration: InputDecoration(
-            hintText: 'Buscar pokemon...',
-            border: InputBorder.none,
-            suffixIcon: _searchController.text.isNotEmpty
-                ? IconButton(
-                    icon: Icon(Icons.clear),
-                    onPressed: () {
-                      _searchController.clear();
-                      ref.read(searchQueryProvider.notifier).state = '';
-                      setState(() {});
-                    },
-                  )
-                : null,
-          ),
+          hintText: 'Buscar Pokemon...',
           onChanged: (value) {
-            setState(() {});
-            _onSearchChanged(value);
+            setState(() {
+              _onSearchChanged(value);
+            });
           },
+          suffixIcon: _searchController.text.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    _searchController.clear();
+                    ref.read(searchQueryProvider.notifier).state = '';
+                    setState(() {});
+                  },
+                )
+              : null,
         ),
       ),
       body: searchState.when(
