@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pokemon_api_v1/core/utils/scroll_behavior_utils.dart';
 import 'package:pokemon_api_v1/presentation/providers/pokemon_search_provider.dart';
 
 class PokemonSearchScreen extends ConsumerStatefulWidget {
@@ -19,7 +20,13 @@ class _PokemonSearchScreenState extends ConsumerState<PokemonSearchScreen> {
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
   Timer? _debounce;
-  bool _isAppBarVisible = true;
+  late final AppBarScrollHandler _scrollHandler;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollHandler = AppBarScrollHandler(ref, screenKey: 'search');
+  }
 
   @override
   void dispose() {
@@ -36,27 +43,16 @@ class _PokemonSearchScreenState extends ConsumerState<PokemonSearchScreen> {
     });
   }
 
-  bool _onScrollNotification(UserScrollNotification notification) {
-    if (notification.direction == ScrollDirection.reverse && _isAppBarVisible) {
-      FocusManager.instance.primaryFocus?.unfocus();
-      setState(() => _isAppBarVisible = false);
-    } else if (notification.direction == ScrollDirection.forward &&
-        !_isAppBarVisible) {
-      setState(() => _isAppBarVisible = true);
-    }
-    return false;
-  }
-
   @override
   Widget build(BuildContext context) {
     final searchState = ref.watch(searchPokemonProvider);
+    final isAppbarVisible = ref.watch(appBarVisibilityProvider('search'));
     final topPadding = MediaQuery.of(context).padding.top;
 
     final dsAppBar = DsSearchAppBar(
       leading: IconButton(
         icon: Icon(Icons.arrow_back),
         onPressed: () => context.pop('/pokedex'),
-        color: DsColors.red,
       ),
       searchInput: DsSearchInput(
         controller: _searchController,
@@ -85,13 +81,17 @@ class _PokemonSearchScreenState extends ConsumerState<PokemonSearchScreen> {
 
     return Scaffold(
       body: NotificationListener<UserScrollNotification>(
-        onNotification: _onScrollNotification,
+        onNotification: (notification) =>
+            _scrollHandler.handleScrollNotification(
+              notification,
+              onHide: () => FocusManager.instance.primaryFocus?.unfocus(),
+            ),
         child: Column(
           children: [
             AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
-              height: _isAppBarVisible ? appBarHeight : topPadding,
+              height: isAppbarVisible ? appBarHeight : topPadding,
               clipBehavior: Clip.hardEdge,
               decoration: const BoxDecoration(),
               child: SizedBox(
