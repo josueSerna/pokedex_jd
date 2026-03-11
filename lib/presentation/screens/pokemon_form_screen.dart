@@ -1,6 +1,7 @@
 import 'package:atomic_ds_system_jd/atomic_ds_system_jd.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pokemon_api_v1/domain/enums/pokemon_form.dart';
 import 'package:pokemon_api_v1/presentation/providers/pokemons_region_provider.dart';
 
@@ -13,11 +14,16 @@ class PokemonFormScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pokemonForm = ref.watch(pokemonByFormProvider(form));
     return Scaffold(
-      appBar: AppBar(title: Text(form.label)),
+      appBar: DsCustomAppBar(
+        showBackButton: true,
+        title: form.label,
+        onBack: () => context.pop(),
+      ),
       body: pokemonForm.when(
         data: (pokemons) {
           return Column(
             children: [
+              const SizedBox(height: DsSpacing.xl),
               Expanded(
                 child: DsGridCard(
                   aspectRatio: 1.4,

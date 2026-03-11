@@ -12,15 +12,13 @@ class PokedexScreen extends ConsumerWidget {
     final state = ref.watch(pokemonProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
-        ),
-        title: Text('Pokedex'),
+      appBar: DsCustomAppBar(
+        showBackButton: true, 
+        onBack: () => context.pop(),
+        title: 'Pokedex',
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: ()=> context.push('/pokedex/search'),
+        onPressed: () => context.push('/pokedex/search'),
         child: Icon(Icons.search),
       ),
       body: state.when(
@@ -35,6 +33,7 @@ class PokedexScreen extends ConsumerWidget {
             },
             child: Column(
               children: [
+                const SizedBox(height: DsSpacing.xl),
                 Expanded(
                   child: DsGridCard(
                     aspectRatio: 1.4,

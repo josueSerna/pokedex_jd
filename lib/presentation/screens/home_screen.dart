@@ -9,12 +9,17 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: DsHeadlineLarge('Pokedex')),
+      appBar: DsCustomAppBar(
+        showBackButton: false,
+        onBack: () => context.pop(),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 1),
+
           child: Column(
             children: [
+              const SizedBox(height: DsSpacing.xl),
               Expanded(
                 child: DsGridCard(
                   aspectRatio: 2.0,
